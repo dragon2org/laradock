@@ -436,6 +436,33 @@ RUN if [ ${INSTALL_SWOOLE} = true ]; then \
 ;fi
 
 ###########################################################################
+# rdkafka EXTENSION
+###########################################################################
+
+ARG INSTALL_RDKAFKA=false
+
+COPY ./librdkafka-1.0.0-RC10.tar.gz /tmp 
+RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
+    # download and install manually
+    #curl -L -o /tmp/librdkafka.tar.gz https://github.com/edenhill/librdkafka/archive/v1.0.0-RC10.tar.gz && \
+    mkdir -p librdkafka && \
+    tar -C librdkafka -zxvf /tmp/librdkafka-1.0.0-RC10.tar.gz --strip 1 && \
+    cd librdkafka/ && \
+    ./configure && \
+    make && \
+    make install && \
+    # Install Php Rdkafka Extension
+    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
+      pecl install rdkafka-3.0.5; \
+    else \
+      pecl install rdkafka; \
+    fi && \
+    echo "extension=rdkafka.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/rdkafka.ini && \
+    ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/rdkafka.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/31-rdkafka.ini \
+    && php -m | grep -q 'rdkafka' \
+;fi
+
+###########################################################################
 # Libpng16 EXTENSION
 ###########################################################################
 

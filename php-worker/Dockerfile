@@ -21,7 +21,8 @@ RUN apk --update add wget \
   autoconf \
   cyrus-sasl-dev \
   libgsasl-dev \
-  supervisor
+  supervisor \
+  bash 
 
 RUN docker-php-ext-install mysqli mbstring pdo pdo_mysql tokenizer xml pcntl
 RUN pecl channel-update pecl.php.net && pecl install memcached mcrypt-1.0.1 && docker-php-ext-enable memcached
@@ -121,6 +122,32 @@ RUN if [ ${INSTALL_SWOOLE} = true ]; then \
     && docker-php-ext-enable swoole \
 ;fi
 
+###########################################################################
+# rdkafka EXTENSION
+###########################################################################
+
+ARG INSTALL_RDKAFKA=false
+
+COPY ./kafka.ini /usr/local/etc/php/conf.d/kafka.ini
+COPY ./librdkafka-1.0.0-RC10.tar.gz /tmp 
+RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
+    # download and install manually
+    #curl -L -o /tmp/librdkafka.tar.gz https://github.com/edenhill/librdkafka/archive/v1.0.0-RC10.tar.gz && \
+    mkdir -p librdkafka && \
+    tar -C librdkafka -zxvf /tmp/librdkafka-1.0.0-RC10.tar.gz --strip 1 && \
+    cd librdkafka/ && \
+    ./configure && \
+    make && \
+    make install && \
+    # Install Php Rdkafka Extension
+    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
+      pecl install rdkafka-3.0.5; \
+    else \
+      pecl install rdkafka; \
+    fi && \
+    printf "extension=rdkafka.so\n" > $PHP_INI_DIR/conf.d/rdkafka.ini \
+    && php -m | grep -q 'rdkafka' \
+;fi
 
 #
 #--------------------------------------------------------------------------

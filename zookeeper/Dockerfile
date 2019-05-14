@@ -1,4 +1,4 @@
-FROM zookeeper:latest
+FROM zookeeper:3.5
 
 LABEL maintainer="Hyduan <hyduan96@qq.com>"
 
@@ -7,4 +7,4 @@ VOLUME /datalog
 
 EXPOSE 2181
 
-CMD ["zookeeper"]
+CMD ["zkServer.sh", "start-foreground"]

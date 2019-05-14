@@ -165,6 +165,7 @@ services:
           - INSTALL_IONCUBE=${PHP_FPM_INSTALL_IONCUBE}
           - INSTALL_APCU=${PHP_FPM_INSTALL_APCU}
           - INSTALL_YAML=${PHP_FPM_INSTALL_YAML}
+          - INSTALL_RDKAFKA=${PHP_FPM_INSTALL_RDKAFKA}
           - INSTALL_ADDITIONAL_LOCALES=${PHP_FPM_INSTALL_ADDITIONAL_LOCALES}
           - INSTALL_MYSQL_CLIENT=${PHP_FPM_INSTALL_MYSQL_CLIENT}
           - ADDITIONAL_LOCALES=${PHP_FPM_ADDITIONAL_LOCALES}
@@ -202,6 +203,7 @@ services:
           - INSTALL_AMQP=${PHP_WORKER_INSTALL_AMQP}
           - INSTALL_GHOSTSCRIPT=${PHP_WORKER_INSTALL_GHOSTSCRIPT}
           - INSTALL_SWOOLE=${PHP_WORKER_INSTALL_SWOOLE}
+          - INSTALL_RDKAFKA=${PHP_WORKER_INSTALL_RDKAFKA}
           - PUID=${PHP_WORKER_PUID}
           - PGID=${PHP_WORKER_PGID}
       volumes:
@@ -1422,16 +1424,19 @@ services:
         - "${MANTICORE_HTTP_PORT}:9308"        
       networks:
         - backend
-
+        
 ### kafka #########################################
     kafka:
       build: ./kafka
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
       networks:
+        - frontend
         - backend
       ports:
         - "${KAFKA_PORT}:9092"
+      extra_hosts:
+        - "dockerhost:${DOCKER_HOST_IP}"
       environment:
-        KAFKA_ADVERTISED_HOST_NAME: 192.168.99.100
-        KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+        KAFKA_ADVERTISED_HOST_NAME: "172.19.0.1"
+        KAFKA_ZOOKEEPER_CONNECT: "172.19.0.1:2181"
