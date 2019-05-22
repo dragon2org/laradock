@@ -26,3 +26,15 @@
 
 /opt/bin/kafka-topics --delete --zookeeper 172.19.0.9:2181 --topic topic_name
 ```
+
+- 启动消费者
+
+```bash
+/opt/bin/kafka-console-consumer.sh --zookeeper 172.19.0.9:2181 --topic zerg.hydra --from-beginning
+```
+
+- 启动生成者
+
+```bash
+/opt/bin/kafka-console-producer.sh --broker-list localhost:9092,localhost:9093,localhost:9094 --sync --topic zerg.hydra
+```
