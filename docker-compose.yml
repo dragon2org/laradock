@@ -1431,6 +1431,7 @@ services:
       build: ./kafka
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
+        - ${DATA_PATH_HOST}/kafka:/kafka
       networks:
         - frontend
         - backend
