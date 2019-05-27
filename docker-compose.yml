@@ -1437,6 +1437,8 @@ services:
         - backend
       ports:
         - "${KAFKA_PORT}:9092"
+      depends_on:
+        - zookeeper
       extra_hosts:
         - "dockerhost:${DOCKER_HOST_IP}"
       depends_on:
