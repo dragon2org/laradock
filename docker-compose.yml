@@ -1439,6 +1439,8 @@ services:
         - "${KAFKA_PORT}:9092"
       extra_hosts:
         - "dockerhost:${DOCKER_HOST_IP}"
+      depends_on:
+        - zookeeper
       environment:
         KAFKA_ADVERTISED_HOST_NAME: "172.19.0.1"
         KAFKA_ZOOKEEPER_CONNECT: "172.19.0.1:2181"
