@@ -224,7 +224,7 @@ MYSQL_VERSION=5.6
 MYSQL_DATABASE=default
 MYSQL_USER=testusr
 MYSQL_PASSWORD=iekd9r_dk9f_39ffg
-MYSQL_PORT=3308
+MYSQL_PORT=3306
 MYSQL_ROOT_PASSWORD=123456
 MYSQL_ENTRYPOINT_INITDB=./mysql/docker-entrypoint-initdb.d
 MYSQL_LOG_PATH=../logs/
@@ -683,3 +683,10 @@ PGADMIN_DEFAULT_PASSWORD=admin
 
 ### kafka ##################################################
 KAFKA_PORT=9092
+
+### jira-software ##################################################
+JIRA_PORT=5002
+JIRA_POSTGRES_HOST=postgres
+JIRA_POSTGRES_USER=laradock_jira
+JIRA_POSTGRES_PASSWORD=laradock_jira
+JIRA_POSTGRES_DB=laradock_jira
