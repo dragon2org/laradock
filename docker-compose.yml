@@ -41,6 +41,8 @@ volumes:
     driver: ${VOLUMES_DRIVER}
   mosquitto:
     driver: ${VOLUMES_DRIVER}
+  jira-software:
+    driver: ${VOLUMES_DRIVER}
 
 services:
 
@@ -993,6 +995,7 @@ services:
           gitlab_rails['trusted_proxies'] = ['caddy','nginx','apache2']
           gitlab_rails['redis_host'] = 'redis'
           gitlab_rails['redis_database'] = 8
+          gitlab_rails['redis_password'] = Test000000
           gitlab_rails['db_host'] = '${GITLAB_POSTGRES_HOST}'
           gitlab_rails['db_username'] = '${GITLAB_POSTGRES_USER}'
           gitlab_rails['db_password'] = '${GITLAB_POSTGRES_PASSWORD}'
@@ -1503,3 +1506,25 @@ services:
       networks:
         - frontend
         - backend
+
+### jira-software #########################################
+    jira-software:
+      build: ./jira-software
+      volumes:
+        - ${DATA_PATH_HOST}/jira:/var/atlassian/application-data/jira
+      networks:
+        - frontend
+        - backend
+      ports:
+        - "${JIRA_PORT}:${JIRA_PORT}"
+      depends_on:
+        - mysql
+      extra_hosts:
+        - "dockerhost:${DOCKER_HOST_IP}"
+      environment:
+        ATL_TOMCAT_PORT: ${JIRA_PORT}
+        ATL_JDBC_USER: "laradock_jira"
+        ATL_JDBC_PASSWORD: "laradock_jira"
+        ATL_DB_DRIVER: "com.mysql.jdbc.Driver"
+        ATL_DB_TYPE: "mysql"
+
