@@ -6,6 +6,9 @@ LABEL maintainer="Mahmoud Zalt <mahmoud@zalt.me>"
 #RUN mkdir -p /usr/local/etc/redis
 #COPY redis.conf /usr/local/etc/redis/redis.conf
 
+## fixup gosu redis  "Fatal error, can't open config file '/usr/local/etc/redis/redis.conf'"
+#RUN chomod 777 /usr/local/etc/redis/redis.conf
+
 VOLUME /data
 
 EXPOSE 6379

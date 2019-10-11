@@ -193,10 +193,15 @@ RUN if [ ${INSTALL_XDEBUG} = false -a ${INSTALL_BLACKFIRE} = true ]; then \
 ARG INSTALL_PHPREDIS=false
 
 RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
+    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
+      printf "\n" | pecl install redis-4.3.0; \
+    else \
+      printf "\n" | pecl install -o -f redis; \
+    fi && \
     # Install Php Redis Extension
-    printf "\n" | pecl install -o -f redis \
-    &&  rm -rf /tmp/pear \
+    rm -rf /tmp/pear \
     &&  docker-php-ext-enable redis \
+    && php -m | grep -q 'redis' \
 ;fi
 
 ###########################################################################
@@ -673,9 +678,9 @@ COPY ./xlaravel.pool.conf /usr/local/etc/php-fpm.d/
 USER root
 
 # Clean up
-RUN apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-    rm /var/log/lastlog /var/log/faillog
+# RUN apt-get clean && \
+#     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+#     rm /var/log/lastlog /var/log/faillog
 
 RUN usermod -u 1000 www-data
 
@@ -689,4 +694,4 @@ WORKDIR /var/www
 
 CMD ["php-fpm"]
 
-EXPOSE 9000
+EXPOSE 9000 3306

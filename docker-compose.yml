@@ -175,6 +175,32 @@ services:
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
       expose:
         - "9000"
+      ports:
+        - "3306:3306"
+      extra_hosts:
+        - "dockerhost:${DOCKER_HOST_IP}"
+      environment:
+        - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
+        - DOCKER_HOST=tcp://docker-in-docker:2375
+        - FAKETIME=${PHP_FPM_FAKETIME}
+      depends_on:
+        - workspace
+      networks:
+        - backend
+      links:
+        - docker-in-docker
+
+### PHP-FPM-7.2 ##############################################
+    php-fpm-72:
+      build:
+        context: ./php-fpm-72
+        args:
+          - ADDITIONAL_LOCALES=${PHP_FPM_ADDITIONAL_LOCALES}
+      volumes:
+        - ./php-fpm/php7.2.ini:/usr/local/etc/php/php.ini
+        - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
+      expose:
+        - "9000"
       extra_hosts:
         - "dockerhost:${DOCKER_HOST_IP}"
       environment:
@@ -253,6 +279,7 @@ services:
         - "${NGINX_HOST_HTTPS_PORT}:443"
       depends_on:
         - php-fpm
+        - php-fpm-72
       networks:
         - frontend
         - backend
@@ -1455,7 +1482,7 @@ services:
       networks:
         - frontend
         - backend
-    nsqd:
+    nsq:
       image: nsqio/nsq
       command: /nsqd --lookupd-tcp-address=nsqlookupd:4160
       depends_on:
